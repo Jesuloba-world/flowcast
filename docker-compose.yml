@@ -1,0 +1,52 @@
+name: flowcast
+
+services: 
+  dragonfly: 
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    container_name: flowcast-dragonfly
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonfly_data:/data
+    command: >
+      dragonfly
+      --logtostderr
+      --requirepass=flowcast_dragonfly_password
+      --maxmemory=1gb
+      --cache_mode=true
+      --proactor_threads=4
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "flowcast_dragonfly_password", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - flowcast_network
+  
+  postgres:
+    image: postgres:17-alpine
+    container_name: flowcast-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: flowcast
+      POSTGRES_PASSWORD: flowcast_password
+      POSTGRES_DB: flowcast
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U flowcast -d flowcast"]
+        interval: 10s
+        timeout: 3s
+        retries: 3
+    networks:
+      - flowcast_network
+
+volumes:
+  dragonfly_data:
+  postgres_data:
+
+networks:
+  flowcast_network:
+    driver: bridge

@@ -1,0 +1,56 @@
+version: "3"
+
+vars:
+    DB_URL:
+        sh: echo "${DB_URL:-postgres://flowcast:flowcast_password@localhost:5432/flowcast?sslmode=disable}"
+    MIGRATIONS_DIR: "./backend/migrations"
+
+tasks:
+    # Database tasks
+    db:up:
+        desc: Start database services
+        cmds:
+            - docker compose up -d postgres dragonfly
+
+    db:down:
+        desc: Stop database services
+        cmds:
+            - docker compose down
+
+    db:logs:
+        desc: Show database logs
+        cmds:
+            - docker compose logs -f postgres dragonfly
+
+    # Migration tasks
+    migrate:create:
+        desc: Create a new migration file
+        cmds:
+            - goose -dir {{.MIGRATIONS_DIR}} create {{.CLI_ARGS}} sql
+        requires:
+            vars: [CLI_ARGS]
+
+    migrate:up:
+        desc: Run all pending migrations
+        cmds:
+            - goose -dir {{.MIGRATIONS_DIR}} postgres "{{.DB_URL}}" up
+
+    migrate:down:
+        desc: Rollback the last migration
+        cmds:
+            - goose -dir {{.MIGRATIONS_DIR}} postgres "{{.DB_URL}}" down
+
+    migrate:reset:
+        desc: Rollback all migrations
+        cmds:
+            - goose -dir {{.MIGRATIONS_DIR}} postgres "{{.DB_URL}}" reset
+
+    migrate:status:
+        desc: Show the status of all migrations
+        cmds:
+            - goose -dir {{.MIGRATIONS_DIR}} postgres "{{.DB_URL}}" status
+
+    migrate:version:
+        desc: Show the current version of the migration
+        cmds:
+            - goose -dir {{.MIGRATION_DIR}} postgres "{{.DB_URL}}" version
