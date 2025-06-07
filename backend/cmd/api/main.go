@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/Jesuloba-world/flowcast/internal/config"
-	"github.com/Jesuloba-world/flowcast/internal/database"
-	"github.com/Jesuloba-world/flowcast/internal/dragonfly"
+	"github.com/Jesuloba-world/flowcast/internal/infrastructure/database"
+	"github.com/Jesuloba-world/flowcast/internal/infrastructure/dragonfly"
 	"github.com/Jesuloba-world/flowcast/internal/logger"
 	"github.com/Jesuloba-world/flowcast/internal/server"
 )

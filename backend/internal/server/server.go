@@ -12,7 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/Jesuloba-world/flowcast/internal/config"
-	"github.com/Jesuloba-world/flowcast/internal/database"
+	"github.com/Jesuloba-world/flowcast/internal/infrastructure/database"
 	"github.com/Jesuloba-world/flowcast/internal/logger"
 )
 
